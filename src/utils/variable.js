@@ -1,13 +1,3 @@
-export const config = {
-  formSelector: ".popup__form",
-  inputSelector: ".popup__input",
-  errorSelector: ".popup__input-error",
-  submitButtonSelector: ".popup__button_active_submit",
-  inactiveButtonClass: "popup__button_disabled",
-  inputErrorClass: "popup__input_type_error",
-  errorClass: "popup__input-error_active",
-};
-
 
 // для валидации
 export const popupFormProfile = document.querySelector('.popup__form_profile');

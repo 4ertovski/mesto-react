@@ -10,16 +10,19 @@ import ImagePopup from './ImagePopup';
 import AddPlacePopup from "./AddPlacePopup";
 import EditProfilePopup from "./EditProfilePopup";
 import EditAvatarPopup from "./EditAvatarPopup";
+import DeleteCardPopup from "./DeleteCardPopup";
 
 function App() {
 
     const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] = React.useState(false);
     const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] = React.useState(false);
     const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = React.useState(false);
+    const [isDeleteCardPopupOpen, setIsDeleteCardPopupOpen] = React.useState(false);
 
     const [cards, setCards] = React.useState([]);
     const [currentUser, setCurrentUser] = React.useState({});
     const [selectedCard, setSelectedCard] = React.useState({link: "", name: "", isOpen: false});
+    const [selectedCardDelete, setSelectedCardDelete] = React.useState({});
 
     React.useEffect(() => {
         api.getInitialCards()
@@ -51,6 +54,11 @@ function App() {
         setIsAddPlacePopupOpen(!isAddPlacePopupOpen);
     }
 
+    function handleDeleteCardClick(card) {
+        setIsDeleteCardPopupOpen(!isDeleteCardPopupOpen);
+        setSelectedCardDelete(card);
+    }
+
     function handleCardLike(card) {
         const isLiked = card.likes.some(i => i._id === currentUser._id);
 
@@ -71,11 +79,15 @@ function App() {
                 .catch(err => console.log(err));
         }
     }
-    function handleCardDelete(card) {
-        api.deleteCard(card._id).then(() => {
-            const newCards = cards.filter((c) => c._id !== card._id);
-            setCards(newCards);
-        });
+    function handleCardDelete() {
+        api.deleteCard(selectedCardDelete._id)
+            .then(() => {
+                const newCards = cards.filter((c) => c._id !== selectedCardDelete._id);
+                setCards(newCards);
+                setSelectedCardDelete({});
+                closeAllPopups();
+            })
+            .catch(err => console.log(err));
     }
         function handleUpdateUser(data) {
             api.patchUserProfile(data)
@@ -94,9 +106,7 @@ function App() {
             .then(() => {
                 setIsEditAvatarPopupOpen(false);
             })
-            .catch((err) => {
-                console.log(`Ошибка обновления аватара пользователя: ${err}`);
-            })
+            .catch(err => console.log(err));
     }
 
         function handleAddPlaceSubmit(card) {
@@ -111,6 +121,7 @@ function App() {
         setIsEditProfilePopupOpen(false)
         setIsEditAvatarPopupOpen(false)
         setIsAddPlacePopupOpen(false)
+        setIsDeleteCardPopupOpen(false)
         setSelectedCard({link: "", name: "", isOpen: false});
     };
 
@@ -124,7 +135,7 @@ function App() {
             onAddPlace={handleAddPlaceClick}
             onCardClick={handleCardClick}
             onCardLike = {handleCardLike}
-            onCardDelete = {handleCardDelete}
+            onCardDelete = {handleDeleteCardClick}
             cards = {cards}
             />
       <Footer />
@@ -145,11 +156,10 @@ function App() {
             onUpdateUser={handleUpdateUser}
             onClose={closeAllPopups}
             isOpen={isEditProfilePopupOpen}/>
-       <PopupWithForm
+       <DeleteCardPopup
             onClose={closeAllPopups}
-            name="delete-card"
-            title="Вы уверены?"
-            button="Да"/>
+            isOpen={isDeleteCardPopupOpen}
+            onDeleteCard={handleCardDelete}/>
     </div>
       </CurrentUserContext.Provider>
   );

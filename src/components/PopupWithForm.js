@@ -8,8 +8,7 @@ function PopupWithForm({title, name, children, button, isOpen, onClose, onSubmit
                 <button className="popup__button popup__button_active_exit popup__close" type="button"
                         aria-label="Закрыть" value="close" onClick={onClose}/>
                 <form className={`popup__form popup__form_${name}`}
-                      onSubmit={onSubmit}
-                      noValidate>
+                      onSubmit={onSubmit}>
                     <h2 className="popup__title">{title}</h2>
                     {children}
                     <button
