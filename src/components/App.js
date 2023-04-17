@@ -1,28 +1,42 @@
 import '../index.css';
 import api from "../utils/api";
 import { CurrentUserContext } from "../contexts/CurrentUserContext";
-import React from 'react';
+import React, { useState } from 'react';
 import Header from './Header';
 import Main from './Main';
 import Footer from './Footer';
-import PopupWithForm from './PopupWithForm';
 import ImagePopup from './ImagePopup';
 import AddPlacePopup from "./AddPlacePopup";
 import EditProfilePopup from "./EditProfilePopup";
 import EditAvatarPopup from "./EditAvatarPopup";
 import DeleteCardPopup from "./DeleteCardPopup";
+import InfoTooltip from "./InfoTooltip";
+import Login from "./Login";
+import Register from "./Register";
+import ProtectedRoute from "./ProtectedRoute";
+import { useNavigate, Route, Routes } from "react-router-dom";
+import * as auth from '../utils/auth';
+
 
 function App() {
 
-    const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] = React.useState(false);
-    const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] = React.useState(false);
-    const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = React.useState(false);
-    const [isDeleteCardPopupOpen, setIsDeleteCardPopupOpen] = React.useState(false);
+    const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] = useState(false);
+    const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] = useState(false);
+    const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = useState(false);
+    const [isDeleteCardPopupOpen, setIsDeleteCardPopupOpen] = useState(false);
+    const [isInfoToolTipOpen, setIsInfoTooltipOpen] = useState(false);
+    
+    const [cards, setCards] = useState([]);
+    const [currentUser, setCurrentUser] = useState({});
+    const [selectedCard, setSelectedCard] = useState({link: "", name: "", isOpen: false});
+    const [selectedCardDelete, setSelectedCardDelete] = useState({});
 
-    const [cards, setCards] = React.useState([]);
-    const [currentUser, setCurrentUser] = React.useState({});
-    const [selectedCard, setSelectedCard] = React.useState({link: "", name: "", isOpen: false});
-    const [selectedCardDelete, setSelectedCardDelete] = React.useState({});
+
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [isSuccess, setIsSuccess] = useState(false);
+    const [userEmail, setUserEmail] = useState('');
+    const navigate = useNavigate()
+
 
     React.useEffect(() => {
         api.getInitialCards()
@@ -125,10 +139,12 @@ function App() {
         setSelectedCard({link: "", name: "", isOpen: false});
     };
 
+
   return (
       <CurrentUserContext.Provider value={currentUser}>
     <div className="page">
-      <Header />
+      <Header
+          />
         <Main
             onEditProfile={handleEditProfileClick}
             onEditAvatar={handleEditAvatarClick}
@@ -160,6 +176,7 @@ function App() {
             onClose={closeAllPopups}
             isOpen={isDeleteCardPopupOpen}
             onDeleteCard={handleCardDelete}/>
+
     </div>
       </CurrentUserContext.Provider>
   );
